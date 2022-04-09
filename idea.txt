@@ -1,0 +1,34 @@
+Database (TodoApp2022):
+For each day, a new table is created like `Apr-9-Sat`
+Table has 3 columns
+Taskno      TaskName        Status
+1           Read Book       C
+2           Learn python    I
+
+C -> Completed
+I -> Incompleted
+
+==========================================================================
+GUI (TodoApp):
++-------------------------------------------------------------+
+|                         TodoApp                             |
+|-------------------------------------------------------------|
+|           | 1     Read Book               ✓   |     (green) |
+|           | 2     Learn Python            x   |     (blue)  |
+|                                                             |
+|                                                             |
+|                                                             |
+|                                                             |
+|                                                             |
+|                                                             |
+|                                                             |
+|    | +   Add a task                                |        |
++-------------------------------------------------------------+
+
+By clicking on "Add a task" user will type a new task, 
+and after press entering or clicking on +, it will be added to the list
+
+On right click of any task, a menu will appear having:
+Edit Task
+Mark as Completed / Incompleted
+Delete Task
