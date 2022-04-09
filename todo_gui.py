@@ -31,8 +31,8 @@ class TodoApp(tk.Tk):
     def _footer(self):
         """Footer to create new Todo"""
 
-    def _create_todo(self):
-        """Creates A Todo"""
+    def _create_task(self):
+        """Creates a task"""
 
     def run(self):
         self.mainloop()

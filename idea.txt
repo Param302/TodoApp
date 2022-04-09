@@ -7,15 +7,15 @@ Taskno      TaskName        Status
 
 C -> Completed
 I -> Incompleted
-
+-> TaskNo will auto-increment
 ==========================================================================
 GUI (TodoApp):
 +-------------------------------------------------------------+
-|                         TodoApp                     [mode]  |
-|                                            Date & time      |
+|   Date &              T TodoApp                     [mode]  |
+|   Time                                                      |
 |-------------------------------------------------------------|
-|           | 1     Read Book               ✓   |     (green) |
-|           | 2     Learn Python            x   |     (blue)  |
+|        |  Read Book                         ✓    |  (green) |
+|        |  Learn Python                       x   |  (blue)  |
 |                                                             |
 |                                                             |
 |                                                             |
@@ -23,13 +23,23 @@ GUI (TodoApp):
 |                                                             |
 |                                                             |
 |                                                             |
-|    | +                    Add a task               |        |
+|          | +          Add a task              |             |
 +-------------------------------------------------------------+
 
-By clicking on "Add a task" user will type a new task, 
-and after press entering or clicking on +, it will be added to the list
+-> Custom Font
+-> By clicking on "Add a task" user will type a new task, 
+and after press entering or clicking on +, it will be added to the list.
 
-On right click of any task, a menu will appear having:
+-> Double clicking on task, will make task name editable
+-> By pressing enter, task name will changed.
+-> TaskFrame will be a grid format
+
+-> On right click of any task, a menu will appear having:
 Edit Task
 Mark as Completed / Incompleted
 Delete Task
+
+=========================================================================
+Helper.py file:
+1. TodayDateTime class gives detail about date & time
+2. GUIStyle class creates a new style based on dark/light theme
