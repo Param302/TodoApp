@@ -11,8 +11,8 @@ I -> Incompleted
 ==========================================================================
 GUI (TodoApp):
 +-------------------------------------------------------------+
-|   Date &              T TodoApp                     [mode]  |
-|   Time                                                      |
+|                         Daily Todo                  [mode]  |
+|   Time       ------------Progress-----------                |
 |-------------------------------------------------------------|
 |        |  Read Book                         ✓    |  (green) |
 |        |  Learn Python                       x   |  (blue)  |
@@ -22,13 +22,19 @@ GUI (TodoApp):
 |                                                             |
 |                                                             |
 |                                                             |
-|                                                             |
 |          | +          Add a task              |             |
+|                                                             |
 +-------------------------------------------------------------+
 
 -> Custom Font
 -> By clicking on "Add a task" user will type a new task, 
 and after press entering or clicking on +, it will be added to the list.
+
+-> Padding / Width / Height will change of all the required widgets after resize
+Maybe swtich every widget to pack and use expand
+
+-> Each task should have a proper preassigned width, 
+so that it doesn't exceeds bcz of task naem
 
 -> Double clicking on task, will make task name editable
 -> By pressing enter, task name will changed.
@@ -43,3 +49,6 @@ Delete Task
 Helper.py file:
 1. TodayDateTime class gives detail about date & time
 2. GUIStyle class creates a new style based on dark/light theme
+
+
+-> Store required details in a proper json file, not text file
