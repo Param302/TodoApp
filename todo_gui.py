@@ -1,4 +1,3 @@
-from asyncio import create_task
 import os
 import tkinter as tk
 from tkinter import ttk
@@ -8,7 +7,7 @@ from PIL import Image, ImageTk
 from helper import TodayDateTime
 
 WIDTH = 600
-HEIGHT = 800
+HEIGHT = 850
 DARK = True
 path = os.getcwd() + "/" + "Todo App/" if "Todo App" not in os.getcwd() else ""
 path += "assets"
@@ -27,7 +26,7 @@ class TodoApp(tk.Tk):
         self.WIN_WIDTH = self.winfo_screenwidth()
         self.WIN_HEIGHT = self.winfo_screenheight()
         x = self.WIN_WIDTH//2 - WIDTH//2
-        y = self.WIN_HEIGHT//2 - HEIGHT//2
+        y = 100
         self.geometry(f"{WIDTH}x{HEIGHT}+{x}+{y}")
         self.title("Todo App")
         self.iconbitmap(f"{path}/icon.ico")
@@ -40,61 +39,73 @@ class TodoApp(tk.Tk):
         """Make Header having App name, 
         day-night btn and Date & time"""
 
-        self._headerframe = ttk.Frame(
-            self, style="success.TFrame", padding=(10, 0, 10, 5))
+        self._headerframe = ttk.Frame(self, style="success.TFrame")
 
-        self._appname = ttk.Label(self._headerframe, text="Daily Todo", style="success.Inverse.TLabel",
-                                  font=(self._font, 24, "bold"), padding=(WIDTH//3, 0, WIDTH//3.7, 0))
-        self._appname.grid(row=0, column=0, columnspan=3)
+        self._tophead = ttk.Frame(self._headerframe, style="success.TFrame")
+        self._appname = ttk.Label(self._tophead, text="Daily Todo", anchor="n", style="success.Inverse.TLabel",
+                                  font=(self._font, 24, "bold"), padding=(WIDTH//5.5, 0, 0, 0))
+        self._appname.pack(side="right", fill="x", expand=1)
 
         self._img = ImageTk.PhotoImage(Image.open(
-            f"{path}/{'sun.png' if DARK else 'moon.png'}").resize((25, 25)))
-        self._modebtn = ttk.Button(self._headerframe, image=self._img,
+            f"{path}/{'sun.png' if DARK else 'moon.png'}").resize((20, 20)))
+        self._modebtn = ttk.Button(self._tophead, image=self._img, padding=(12),
                                    style="success.TButton", command=self._change_mode)
-        self._modebtn.grid(row=0, column=3, ipadx=6, ipady=8)
+        self._modebtn.pack(side="right", before=self._appname)
+        self._tophead.pack(side="top", fill="both", expand=1)
 
-        self._timelbl = ttk.Label(self._headerframe, font=(self._font, 12),
-                                  text=self.todaydt.get_current_time().lower(), style="success.Inverse.TLabel")
-        self._timelbl.grid(row=1, column=0, sticky="w")
-        self._progressbar = ttk.Progressbar(self._headerframe, maximum=100, value=25,
-                                            length=WIDTH//3, style="warning.Horizontal.TProgressbar")
-        self._progressbar.grid(row=1, column=1, ipadx=70)
         self._headerframe.pack(side="top", fill="x")
-        self._sep1 = ttk.Separator(
-            self, orient="horizontal", style="TSeparator")
-        self._sep1.pack(side="top", fill="x")
 
     def _todo_area(self):
         """Main area of window where All todo's are displayed"""
-        self._todoframe = ttk.Frame(self, style="success.TFrame",
-                                    padding=(WIDTH//8, 10))
+        self._mainframe = ttk.Frame(self, style="danger.TFrame")
+        # canvas will have frame which will be scrollable
+        self._canvas = tk.Canvas(self._mainframe, background="gold")
+        self._scrollbar = ttk.Scrollbar(self._mainframe, orient="vertical",
+                                       command=self._canvas.yview)
+        self._todoframe = ttk.Frame(self._canvas, style="success.TFrame")
+        self.taskvars = []
 
-        self._todoframe.pack(side="top", fill="both", expand=1)
+        self._todoframe.bind("<Configure>", lambda e: self._canvas.configure(
+                             scrollregion=self._canvas.bbox("all")))
+
+        self._canvas.create_window(
+            (0, 0), window=self._todoframe, width=WIDTH-10, anchor="nw")
+        self._canvas.configure(yscrollcommand=self._scrollbar.set)
+
+        # self._todoframe.pack(fill="both", expand=1)
+        self._canvas.pack(side="left", fill="both", expand=1)
+        self._scrollbar.pack(side="right", fill="y")
+
+        self._mainframe.pack(side="top", fill="both", expand=1)
 
     def _footer(self):
         """Footer to create new Todo"""
-        self._footerframe = ttk.Frame(
-            self, style="success.TFrame", padding=(0, 0, 0, HEIGHT//20))
+        self._footerframe = ttk.Frame(self, style="info.TFrame")
 
-        self._newtask = tk.StringVar(self, "Add new Task")
-        self._addentry = ttk.Entry(self._footerframe, text=self._newtask,
-                                   font=(self._font, 12), width=WIDTH//14,
-                                   state="readonly")
-        self._addentry.grid(row=0, column=0)
+        self._topfooter = ttk.Frame(self._footerframe, style="success.TFrame")
+        self._newtask = tk.StringVar(self._topfooter, "Add new Task")
+        self._addentry = ttk.Entry(self._topfooter, textvariable=self._newtask,
+                                   font=(self._font, 12), state="readonly")
+        self._addentry.pack(side="left", fill="x", expand=1)
         self._addentry.bind("<Button-1>", lambda e: e.widget.configure(state="active")
-                                or self._newtask.set("") or self._addbtn.configure(state="active"))
-        self._addentry.bind(
-            "<KeyRelease>", lambda e: e.widget.unbind(sequence="<Button-1>"))
+                            or self._newtask.set("") or self._addbtn.configure(state="active"))
+        # if user is entering new task, mouse event will disabled
+        self._addentry.bind("<KeyRelease>",
+                            lambda e: e.widget.unbind(sequence="<Button-1>"))
         self._addentry.bind("<Return>", lambda e: self._add_task())
 
         self._addimg = ImageTk.PhotoImage(
-            Image.open(f"{path}/add.png").resize((20, 20)))
-        self._addbtn = ttk.Button(self._footerframe, image=self._addimg,
+            Image.open(f"{path}/add.png").resize((20, 21)))
+        self._addbtn = ttk.Button(self._topfooter, image=self._addimg,
                                   state="disabled", style="success.TButton",
                                   command=self._add_task)
-        self._addbtn.grid(row=0, column=1)
+        self._addbtn.pack(side="left")
+        self._topfooter.pack(side="top", fill="x", padx=50)
 
-        self._footerframe.pack(side="bottom", fill="x", padx=WIDTH//8)
+        self._progressbar = ttk.Progressbar(self._footerframe, maximum=100, value=25,
+                                            style="warning.Horizontal.TProgressbar")
+        self._progressbar.pack(side="top", fill="x", expand=1)
+        self._footerframe.pack(side="bottom", fill="x")
 
     def _add_task(self):
         """Callback to add a new Task"""
@@ -112,19 +123,36 @@ class TodoApp(tk.Tk):
         self._addbtn.configure(state="disabled")
 
     def _create_task(self, *, taskno: int, taskname: str):
-        """Creates a Task"""
-        _task = ttk.Frame(
-            self._todoframe, style="info.TFrame", padding=(10, 0))
-        _tasklbl = ttk.Label(_task, text=taskname, font=(self._font, 14),
-                             style="warning.Inverse.TLabel")
-        _tasklbl.grid(row=0, column=1, padx=10, pady=5)
-        _task.grid(row=taskno-1, column=0, sticky="w")
+        """Create a Task Frame"""
+        _taskframe = ttk.Frame(self._todoframe, padding=(
+            10, 2), style="success.TFrame")
+        print(_taskframe, taskname, str(taskno))
+        self._taskname = tk.StringVar(_taskframe, taskname, taskname)
+        self.taskvars.append(self._taskname)
+        _task = ttk.Entry(_taskframe, textvariable=self._taskname, font=(self._font, 12),
+                          state="readonly", cursor="arrow", style="success.TEntry")
+        _task.pack(side="left", fill="x", expand=1, padx=20)
+        _taskframe.pack(side="top", fill="x")
+
+        _taskframe.bind("<Enter>", lambda e: _taskframe.config(relief="solid"))
+        _taskframe.bind("<Leave>", lambda e: _taskframe.config(relief="flat"))
+        _task.bind("<Enter>", lambda e: _taskframe.config(relief="solid"))
+        _task.bind("<Leave>", lambda e: _taskframe.config(relief="flat"))
+        _task.bind("<Button-1>", self._edit_task)
+        _task.bind("<Return>", lambda e: e.widget.config(state="readonly"))
+
+    def _edit_task(self, event):
+        """Edit the task"""
+        old_task = event.widget["textvariable"]
+        event.widget.config(state="active")
+        if old_task == event.widget["textvariable"]:
+            return
 
     def _change_mode(self):
         """Change night mode to day mode and vice-versa."""
         global DARK
         self._img = ImageTk.PhotoImage(Image.open(
-            f"{path}/{'moon.png' if DARK else 'sun.png'}").resize((25, 25)))
+            f"{path}/{'moon.png' if DARK else 'sun.png'}").resize((20, 20)))
         self._modebtn.configure(image=self._img)
         DARK = not DARK
         print("called")
